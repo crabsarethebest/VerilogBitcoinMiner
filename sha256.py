@@ -119,8 +119,49 @@ def choice(bin_str1: str, bin_str2: str, bin_str3: str):
         char_index += 1
     return choice_str
 
+def majority(bin_str1: str, bin_str2: str, bin_str3: str):
+    if not all(bit in '01' for bit in bin_str1) or not all(bit in '01' for bit in bin_str2) or not all(bit in '01' for bit in bin_str3):
+        raise ValueError("Input strings must consist only of '0's and '1's.")
+    
+    if len(bin_str1) != len(bin_str2) or len(bin_str1) != len(bin_str3):
+        raise ValueError("Input strings must be of equal length.")
+    
+    maj_str = ''
+    char_index = 0
+
+    while char_index != len(bin_str1):
+        num_ones = 0
+        num_zeroes = 0
+        if bin_str1[char_index] == '1':
+            num_ones += 1
+        else:
+            num_zeroes += 1
+
+        if bin_str2[char_index] == '1':
+            num_ones += 1
+        else:
+            num_zeroes += 1
+
+        if bin_str3[char_index] == '1':
+            num_ones += 1
+        else:
+            num_zeroes += 1
+        
+        if num_ones > num_zeroes:
+            maj_str += '1'
+        else:
+            maj_str += '0'
+        
+        char_index += 1
+    
+    return maj_str
+
+
+
 
 if __name__ == "__main__":
     input = 'abc'
     input_binary = ''.join(format(ord(char), '08b') for char in input) # convert input to binary
     pad_to_512(input_binary)
+
+    
