@@ -62,10 +62,65 @@ def xor (binary_str1: str, binary_str2: str):
 
     return xor_str
             
+def add_binary_strings(bin_str1: str, bin_str2: str):
+    # Convert binary strings to integers
+    num1 = int(bin_str1, 2)
+    num2 = int(bin_str2, 2)
+    
+    # Add the integers and take modulo 32
+    result = (num1 + num2) % (2**32)
+    
+    # Convert the result back to a binary string
+    result_binary = bin(result)[2:].zfill(32)
+    
+    return result_binary
+
+def lower_sigma_template(bin_str: str, rot1: int, rot2: int, shift1: int):
+    value1 = rotate_binary_string(bin_str, rot1)
+    value2 = rotate_binary_string(bin_str, rot2)
+    value3 = shift_binary_string(bin_str, shift1)
+    return(xor(xor(value1, value2),value3))
+
+def lower_sigma_zero(bin_str: str):
+    return lower_sigma_template(bin_str, 7, 18, 3)
+
+def lower_sigma_one(bin_str: str):
+    return lower_sigma_template(bin_str, 17, 19, 10)
+
+def upper_sigma_template(bin_str: str, rot1: int, rot2: int, rot3: int):
+    value1 = rotate_binary_string(bin_str, rot1)
+    value2 = rotate_binary_string(bin_str, rot2)
+    value3 = rotate_binary_string(bin_str, rot3)
+    return(xor(xor(value1, value2),value3))
+
+def upper_sigma_zero(bin_str: str):
+    return upper_sigma_template(2, 13, 22)
+
+def upper_sigma_one(bin_str: str):
+    return upper_sigma_template(6, 11, 25)
+
+def choice(bin_str1: str, bin_str2: str, bin_str3: str):
+    if not all(bit in '01' for bit in bin_str1) or not all(bit in '01' for bit in bin_str2) or not all(bit in '01' for bit in bin_str3):
+        raise ValueError("Input strings must consist only of '0's and '1's.")
+    
+    if len(bin_str1) != len(bin_str2) or len(bin_str1) != len(bin_str3):
+        raise ValueError("Input strings must be of equal length.")    
+
+    choice_str = ''
+    char_index = 0
+    while char_index != len(bin_str1):
+        if bin_str1[char_index] == '1':
+            choice_str += bin_str2[char_index]
+        elif bin_str1[char_index] == '0':
+            choice_str += bin_str3[char_index]
+        else:
+            print("error: bin_str1 must only contain ones and zeroes")
+            sys.exit(0)
+        char_index += 1
+    return choice_str
+
 
 if __name__ == "__main__":
     input = 'abc'
     input_binary = ''.join(format(ord(char), '08b') for char in input) # convert input to binary
-#    pad_to_512(input_binary)
-    xor_str = xor('10011', '00011')
-    print(xor_str)
+    pad_to_512(input_binary)
