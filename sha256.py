@@ -1,4 +1,3 @@
-import sys
 import sha_256_constants
 from hashlib import sha256
 
@@ -27,8 +26,7 @@ def pad_to_512(message: str):
 
 def shift_binary_string(binary_string: str, amount: int):
     if len(binary_string) < amount:
-        print('error: cannot shift by more than string length')
-        sys.exit(1)
+        raise ValueError("Cannot shift by more than string length.")
 
     # Backfill with zeros to the left
     shifted_string = '0' * amount + binary_string[:-amount]
@@ -48,8 +46,7 @@ def rotate_binary_string(binary_string: str, amount: int):
 
 def xor (binary_str1: str, binary_str2: str):
     if len(binary_str1) != len(binary_str2):
-        print('error: must XOR values of equal length')
-        sys.exit(0)
+        raise ValueError("Must XOR values of equal length.")
 
     xor_str = ''
     char_index = 0
@@ -63,58 +60,42 @@ def xor (binary_str1: str, binary_str2: str):
         char_index += 1
 
     return xor_str
-            
-# def add_binary_strings(bin_str1: str, bin_str2: str):
-#     # Convert binary strings to integers
-#     num1 = int(bin_str1, 2)
-#     num2 = int(bin_str2, 2)
-    
-#     # Add the integers and take modulo 32
-#     result = (num1 + num2) % (2**32)
-    
-#     # Convert the result back to a binary string
-#     result_binary = bin(result)[2:].zfill(32)
-    
-#     return result_binary
 
-def add_binary_strings(bin_str_array):
-    result = 0
+def add_binary_strings(binary_string_array):
+    binary_sum = 0
 
-    for bin_str in bin_str_array:
-        num = int(bin_str, 2)
-        result += num
+    for binary_string in binary_string_array:
+        binary_number = int(binary_string, 2)
+        binary_sum += binary_number
+   
+    binary_sum = binary_sum % (2**32)
+    
+    # Convert the result back to a binary string  
+    return bin(binary_sum)[2:].zfill(32)
 
-    
-    result = result % (2**32)
-    
-    # Convert the result back to a binary string
-    result_binary = bin(result)[2:].zfill(32)
-    
-    return result_binary
-
-def lower_sigma_template(bin_str: str, rot1: int, rot2: int, shift1: int):
-    value1 = rotate_binary_string(bin_str, rot1)
-    value2 = rotate_binary_string(bin_str, rot2)
-    value3 = shift_binary_string(bin_str, shift1)
+def lower_sigma(binary: str, rotate_1: int, rotate_2: int, shift_1: int):
+    value1 = rotate_binary_string(binary, rotate_1)
+    value2 = rotate_binary_string(binary, rotate_2)
+    value3 = shift_binary_string(binary, shift_1)
     return(xor(xor(value1, value2),value3))
 
 def lower_sigma_zero(bin_str: str):
-    return lower_sigma_template(bin_str, 7, 18, 3)
+    return lower_sigma(bin_str, 7, 18, 3)
 
 def lower_sigma_one(bin_str: str):
-    return lower_sigma_template(bin_str, 17, 19, 10)
+    return lower_sigma(bin_str, 17, 19, 10)
 
-def upper_sigma_template(bin_str: str, rot1: int, rot2: int, rot3: int):
-    value1 = rotate_binary_string(bin_str, rot1)
-    value2 = rotate_binary_string(bin_str, rot2)
-    value3 = rotate_binary_string(bin_str, rot3)
+def upper_sigma(binary: str, rotate_1: int, rotate_2: int, rotate_3: int):
+    value1 = rotate_binary_string(binary, rotate_1)
+    value2 = rotate_binary_string(binary, rotate_2)
+    value3 = rotate_binary_string(binary, rotate_3)
     return(xor(xor(value1, value2),value3))
 
 def upper_sigma_zero(bin_str: str):
-    return upper_sigma_template(bin_str, 2, 13, 22)
+    return upper_sigma(bin_str, 2, 13, 22)
 
 def upper_sigma_one(bin_str: str):
-    return upper_sigma_template(bin_str, 6, 11, 25)
+    return upper_sigma(bin_str, 6, 11, 25)
 
 def choice(bin_str1: str, bin_str2: str, bin_str3: str):
     if not all(bit in '01' for bit in bin_str1) or not all(bit in '01' for bit in bin_str2) or not all(bit in '01' for bit in bin_str3):
@@ -131,8 +112,7 @@ def choice(bin_str1: str, bin_str2: str, bin_str3: str):
         elif bin_str1[char_index] == '0':
             choice_str += bin_str3[char_index]
         else:
-            print("error: bin_str1 must only contain ones and zeroes")
-            sys.exit(0)
+            raise ValueError("bin_str1 must only contain ones and zeroes.")
         char_index += 1
     return choice_str
 
@@ -256,23 +236,10 @@ if __name__ == "__main__":
     binary_to_hex(h_constants['g']) + binary_to_hex(h_constants['h'])
 
     print(final_hash)
-    correct_value = sha256(('abc'*50).encode('utf-8')).hexdigest()
+    correct_value = sha256(input.encode('utf-8')).hexdigest()
     print(correct_value)
 
     if final_hash == correct_value:
         print("we did it!")
     else:
         print("something went wrong")
-
-
-
-
-
-
-
-
-
-
-    #print(len(sha_256_constants.k_constants[0]))
-
-    
