@@ -202,50 +202,62 @@ def binary_to_hex(binary_string):
     
     return hex_string
 
+def split_string_into_512_characters(string):
+    # Check if the length of the string is divisible by 512
+    if len(string) % 512 != 0:
+        raise ValueError("String length is not divisible by 512 characters")
+
+    # Split the string into 512-character chunks
+    array = [string[i:i+512] for i in range(0, len(string), 512)]
+    return array
+
 if __name__ == "__main__":
-    input = 'abc'
+    input = 'abc'*50
     input_binary = ''.join(format(ord(char), '08b') for char in input) # convert input to binary
     message = pad_to_512(input_binary)
-    message_schedule = get_message_schedule(message)
+    message_blocks = split_string_into_512_characters(message)
 
     k_constants = sha_256_constants.k_constants
     h_constants = sha_256_constants.h_constants.copy()
 
+    for message_block in message_blocks:
+        h_constants_previous = h_constants.copy()
+        message_schedule = get_message_schedule(message_block)
 
-    i = 0
-    while i < 64:
-        w_const = message_schedule[i]
-        k_const = k_constants[i]
-        T1 = add_binary_strings([upper_sigma_one(h_constants.get('e')), choice(h_constants.get('e'), h_constants.get('f'), h_constants.get('g')), h_constants.get('h'), k_const, w_const])
-        T2 = add_binary_strings([upper_sigma_zero(h_constants.get('a')), majority(h_constants.get('a'), h_constants.get('b'), h_constants.get('c'))])
-        h_constants['h'] = h_constants.get('g')
-        h_constants['g'] = h_constants.get('f')
-        h_constants['f'] = h_constants.get('e')
-        h_constants['e'] = h_constants.get('d')
-        h_constants['d'] = h_constants.get('c')
-        h_constants['c'] = h_constants.get('b')
-        h_constants['b'] = h_constants.get('a')
+        i = 0
+        while i < 64:
+            w_const = message_schedule[i]
+            k_const = k_constants[i]
+            T1 = add_binary_strings([upper_sigma_one(h_constants.get('e')), choice(h_constants.get('e'), h_constants.get('f'), h_constants.get('g')), h_constants.get('h'), k_const, w_const])
+            T2 = add_binary_strings([upper_sigma_zero(h_constants.get('a')), majority(h_constants.get('a'), h_constants.get('b'), h_constants.get('c'))])
+            h_constants['h'] = h_constants.get('g')
+            h_constants['g'] = h_constants.get('f')
+            h_constants['f'] = h_constants.get('e')
+            h_constants['e'] = h_constants.get('d')
+            h_constants['d'] = h_constants.get('c')
+            h_constants['c'] = h_constants.get('b')
+            h_constants['b'] = h_constants.get('a')
 
-        h_constants['a'] = add_binary_strings([T1, T2])
-        h_constants['e'] = add_binary_strings([h_constants.get('e'), T1])
-        i += 1
+            h_constants['a'] = add_binary_strings([T1, T2])
+            h_constants['e'] = add_binary_strings([h_constants.get('e'), T1])
+            i += 1
 
-    h_constants['a'] = add_binary_strings([sha_256_constants.h_constants.get('a'), h_constants.get('a')])
-    h_constants['b'] = add_binary_strings([sha_256_constants.h_constants.get('b'), h_constants.get('b')])
-    h_constants['c'] = add_binary_strings([sha_256_constants.h_constants.get('c'), h_constants.get('c')])
-    h_constants['d'] = add_binary_strings([sha_256_constants.h_constants.get('d'), h_constants.get('d')])
-    h_constants['e'] = add_binary_strings([sha_256_constants.h_constants.get('e'), h_constants.get('e')])
-    h_constants['f'] = add_binary_strings([sha_256_constants.h_constants.get('f'), h_constants.get('f')])
-    h_constants['g'] = add_binary_strings([sha_256_constants.h_constants.get('g'), h_constants.get('g')])
-    h_constants['h'] = add_binary_strings([sha_256_constants.h_constants.get('h'), h_constants.get('h')])
+        h_constants['a'] = add_binary_strings([h_constants_previous.get('a'), h_constants.get('a')])
+        h_constants['b'] = add_binary_strings([h_constants_previous.get('b'), h_constants.get('b')])
+        h_constants['c'] = add_binary_strings([h_constants_previous.get('c'), h_constants.get('c')])
+        h_constants['d'] = add_binary_strings([h_constants_previous.get('d'), h_constants.get('d')])
+        h_constants['e'] = add_binary_strings([h_constants_previous.get('e'), h_constants.get('e')])
+        h_constants['f'] = add_binary_strings([h_constants_previous.get('f'), h_constants.get('f')])
+        h_constants['g'] = add_binary_strings([h_constants_previous.get('g'), h_constants.get('g')])
+        h_constants['h'] = add_binary_strings([h_constants_previous.get('h'), h_constants.get('h')])
 
     final_hash = binary_to_hex(h_constants['a']) + binary_to_hex(h_constants['b']) + binary_to_hex(h_constants['c']) + \
     binary_to_hex(h_constants['d']) + binary_to_hex(h_constants['e']) + binary_to_hex(h_constants['f']) + \
     binary_to_hex(h_constants['g']) + binary_to_hex(h_constants['h'])
 
     print(final_hash)
-    correct_value = sha256('abc'.encode('utf-8')).hexdigest()
-    #print(correct_value)
+    correct_value = sha256(('abc'*50).encode('utf-8')).hexdigest()
+    print(correct_value)
 
     if final_hash == correct_value:
         print("we did it!")
