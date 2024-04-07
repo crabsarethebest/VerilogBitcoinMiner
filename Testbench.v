@@ -22,7 +22,7 @@
 
 module Testbench();
 
-    logic [0:511] bits = '0; // Initialize with all zeros
+    logic [0:1023] bits = '0; // Initialize with all zeros
 
     // Your input data
     logic [0:23] bits_value = 24'b011000010110001001100011;
@@ -43,7 +43,8 @@ module Testbench();
 
     
 //    logic [0:511] bits = 512'b011000010110001001100011; // 'abc'
-    logic [9:0]  bits_width = 24;
+    logic [0:9]  bits_width = 24;
+//    logic [9:0]  bits_width = 490;
     logic reset;
     reg clk = 0;
     sha256 sha256_instantiation(.input_length(bits_width), .binary_input(bits), .reset(reset), .clk(clk));
@@ -51,6 +52,7 @@ module Testbench();
     always #1 clk = ~clk;
         
     initial begin
+        $display("bits width is: %b", bits_width);
         #5
         reset = 1'b0;
         #5

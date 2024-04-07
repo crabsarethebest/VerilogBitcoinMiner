@@ -21,20 +21,23 @@
 
 
 module multiples_of_512(
-    input integer bits_width,
-    output integer padded_message_width
+    logic [9:0] input_length,
+    output integer padded_message_width,
+    output integer multiples_of_512
     );
     
     
-    integer number_512_multiples = 1;
+    assign multiples_of_512 = 1;
     
-    assign padded_message_width = number_512_multiples * 512;
+    assign padded_message_width = multiples_of_512 * 512;
     
-    always_comb
-        while ((number_512_multiples * 512 - bits_width) < 64) begin
-            number_512_multiples += 1;
+    always_comb begin
+        while ((multiples_of_512 * 512 - input_length) < 64) begin
+            multiples_of_512  += 1;
         end
-                
+        $display("input length: %d", input_length);
+        $display("multiples of 512: %d", multiples_of_512);
+    end             
         
         
         
