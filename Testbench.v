@@ -21,9 +21,23 @@
 
 
 module Testbench();
-    hello_world hello_world_instantiation();
+    logic [1023:0] bits = 1024'b011000010110001001100011; // 'abc'
+    integer bits_width = 24;
+    logic reset;
+    reg clk = 0;
+    sha256 sha256_instantiation(.bits_width(bits_width), .bits(bits), .reset(reset), .clk(clk));
+    
+    always #1 clk = ~clk;
+        
     initial begin
+        #5
+        reset = 1'b0;
+        #5
+        reset = 1'b1;
+        #5
+        reset = 1'b0;
+        #5
         $display("hello");
-        $display(hello_world_instantiation.x);
+        //$display(sha256_instantiation.x);
     end
 endmodule
