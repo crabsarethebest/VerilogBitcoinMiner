@@ -21,11 +21,32 @@
 
 
 module Testbench();
-    logic [1023:0] bits = 1024'b011000010110001001100011; // 'abc'
-    integer bits_width = 24;
+
+    logic [0:511] bits = '0; // Initialize with all zeros
+
+    // Your input data
+    logic [0:23] bits_value = 24'b011000010110001001100011;
+
+    always_comb begin
+        // Loop to set the bits from binary_input
+        for (int i = 0; i < 24; i++) begin
+            bits[i] = bits_value[i];
+        end
+        
+    $display("%b",bits[0]);
+    $display("%b",bits[1]);
+    $display("%b",bits[2]);
+    $display("%b",bits[3]);
+    $display("%b",bits[4]);
+    $display("%b",bits[5]);
+   end 
+
+    
+//    logic [0:511] bits = 512'b011000010110001001100011; // 'abc'
+    logic [9:0]  bits_width = 24;
     logic reset;
     reg clk = 0;
-    sha256 sha256_instantiation(.bits_width(bits_width), .bits(bits), .reset(reset), .clk(clk));
+    sha256 sha256_instantiation(.input_length(bits_width), .binary_input(bits), .reset(reset), .clk(clk));
     
     always #1 clk = ~clk;
         
