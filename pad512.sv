@@ -1,4 +1,3 @@
-`timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
 // Company: 
 // Engineer: 
@@ -19,16 +18,13 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-
 module multiples_of_512(
     logic [9:0] input_length,
     output integer padded_message_width,
     output integer multiples_of_512
     );
-    
-    
+     
     assign multiples_of_512 = 1;
-    
     assign padded_message_width = multiples_of_512 * 512;
     
     always_comb begin
@@ -39,11 +35,4 @@ module multiples_of_512(
         $display("multiples of 512: %d", multiples_of_512);
     end             
         
-        
-        
-        
-        
-         
-    
-
 endmodule

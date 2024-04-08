@@ -1,4 +1,3 @@
-`timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
 // Company: 
 // Engineer: 
@@ -22,45 +21,18 @@
 
 module Testbench();
 
-    logic [0:1023] bits = '0; // Initialize with all zeros
+    logic [0:1023] binary_input = '0; // Initialize with all zeros
 
-    // Your input data
     logic [0:23] bits_value = 24'b011000010110001001100011;
+    logic [0:9]  input_length = 24;
 
     always_comb begin
         // Loop to set the bits from binary_input
         for (int i = 0; i < 24; i++) begin
-            bits[i] = bits_value[i];
+            binary_input[i] = bits_value[i];
         end
-        
-    $display("%b",bits[0]);
-    $display("%b",bits[1]);
-    $display("%b",bits[2]);
-    $display("%b",bits[3]);
-    $display("%b",bits[4]);
-    $display("%b",bits[5]);
    end 
 
+    sha256 sha256_instantiation(.input_length(input_length), .binary_input(binary_input));
     
-//    logic [0:511] bits = 512'b011000010110001001100011; // 'abc'
-    logic [0:9]  bits_width = 24;
-//    logic [9:0]  bits_width = 490;
-    logic reset;
-    reg clk = 0;
-    sha256 sha256_instantiation(.input_length(bits_width), .binary_input(bits), .reset(reset), .clk(clk));
-    
-    always #1 clk = ~clk;
-        
-    initial begin
-        $display("bits width is: %b", bits_width);
-        #5
-        reset = 1'b0;
-        #5
-        reset = 1'b1;
-        #5
-        reset = 1'b0;
-        #5
-        $display("hello");
-        //$display(sha256_instantiation.x);
-    end
 endmodule
