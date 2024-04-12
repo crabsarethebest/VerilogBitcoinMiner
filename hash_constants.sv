@@ -1,3 +1,6 @@
+`include "sha256_constants.sv"
+`include "sigma_functions.sv"
+`include "bit_select_functions.sv"
 //////////////////////////////////////////////////////////////////////////////////
 // Company: 
 // Engineer: 
@@ -36,22 +39,19 @@ module hash_constants(
     output logic [0:31] e_out,
     output logic [0:31] f_out,
     output logic [0:31] g_out,
-    output logic [0:31] h_out,
-    output logic [0:31] h_constants [0:63]
+    output logic [0:31] h_out
     );
     
-    
-//    always_comb begin
-//        for (int i = 0; i < 64; i++) begin
-//            logic [0:31] T1;
-//            logic [0:31] T2;
-//            message_schedule[i] = message_block[i*32+ : 32];
-        
-//        for (int j = 16; j < 64; j++) begin
-//            logic [0:31] message;
-//            message = sigma_functions::lower_sigma_one(message_schedule[j-2]) + message_schedule[j-7] + sigma_functions::lower_sigma_zero(message_schedule[j-15]) + message_schedule[j-16];
-//            message_schedule[j] = message;
-            
-//        end
-//    end
+    logic [0:31] w_const;
+    logic [0:31] k_const;
+    logic [0:31] T1;
+    logic [0:31] T2;
+    always_comb begin
+        for (int i = 0; i < 64; i++) begin
+            w_const = message_schedule[i];
+            k_const = sha256_constants::k_constants[i];
+            T1 = sigma_functions::upper_sigma_one(e_in); // Todo, pick it up from here.  Right choice function.
+            // Todo: for T2 write majority function
+        end
+   end 
 endmodule

@@ -1,11 +1,5 @@
 package sigma_functions;
 
-function int add(int a, int b);
-    int sum;
-    sum = a + b;
-    return sum;
-endfunction
-
 function logic [0:31] lower_sigma_zero(logic [0:31] bits);
     logic [0:31] rotate_right_7;
     logic [0:31] rotate_right_18;
@@ -22,7 +16,6 @@ function logic [0:31] lower_sigma_zero(logic [0:31] bits);
        
     return lower_sigma_zero_output;   
 endfunction
-
 
 function logic [0:31] lower_sigma_one(logic [0:31] bits);
     logic [0:31] rotate_right_17;
@@ -74,6 +67,5 @@ function logic [0:31] upper_sigma_one(logic [0:31] bits);
        
     return upper_sigma_one_output;   
 endfunction
-
 
 endpackage
