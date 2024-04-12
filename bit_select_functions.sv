@@ -34,11 +34,14 @@ function logic [0:31] choice(logic [0:31] word_A, logic [0:31] word_B, logic [0:
 endfunction
 
 function logic [0:31] majority(logic [0:31] word_A, logic [0:31] word_B, logic [0:31] word_C);
-    int num_zeroes = 0;
-    int num_ones = 0;
+    int num_zeroes;
+    int num_ones;
     logic [0:31] majority_output;
     
     for (int i = 0; i <= 31; i++) begin
+        num_zeroes = 0;
+        num_ones = 0;  
+    
         if (word_A[i] == 1'b1)
             num_ones ++;
         else
@@ -57,7 +60,8 @@ function logic [0:31] majority(logic [0:31] word_A, logic [0:31] word_B, logic [
         if (num_ones > num_zeroes)
             majority_output[i] = 1'b1;
         else
-            majority_output[i] = 1'b0;       
+            majority_output[i] = 1'b0;
+            
     end
             
     return majority_output;
