@@ -3,9 +3,11 @@ module sha256 (
     input logic [0:9] input_length,
     input logic [0:1023] binary_input
     );
+    
+    integer multiples_of_512_output;
     logic [0:1023] padded_message;
     
-    pad_bits pad_bits_instatiation(.input_length(input_length), . binary_input(binary_input), .padded_message(padded_message));
+    pad_bits pad_bits_instatiation(.input_length(input_length), . binary_input(binary_input), .multiples_of_512_output(multiples_of_512_output), .padded_message(padded_message));
     
     logic [0:31] message_schedule_lower_array [0:63];
     logic [0:31] message_schedule_upper_array [0:63];
@@ -14,6 +16,7 @@ module sha256 (
     
     logic [0:31] a_lower, b_lower, c_lower, d_lower, e_lower, f_lower, g_lower, h_lower;
     logic [0:31] a_upper, b_upper, c_upper, d_upper, e_upper, f_upper, g_upper, h_upper;
+    logic [0:255] hash_out_lower, hash_out_upper, final_hash;
     hash_constants hash_constants_lower(
                                         .message_schedule(message_schedule_lower_array),
                                         .a_in(sha256_constants::h_constants[0]),
@@ -31,13 +34,40 @@ module sha256 (
                                         .e_out(e_lower),
                                         .f_out(f_lower),
                                         .g_out(g_lower),
-                                        .h_out(h_lower)
-                                        
+                                        .h_out(h_lower),
+                                        .hash_out(hash_out_lower)                                   
     );
     
-    hash_constants hash_constants_upper(); // still needs to be done
+    hash_constants hash_constants_upper(
+                                        .message_schedule(message_schedule_upper_array),
+                                        .a_in(a_lower),
+                                        .b_in(b_lower),
+                                        .c_in(c_lower),
+                                        .d_in(d_lower),
+                                        .e_in(e_lower),
+                                        .f_in(f_lower),
+                                        .g_in(g_lower),
+                                        .h_in(h_lower),      
+                                        .a_out(a_upper),
+                                        .b_out(b_upper),
+                                        .c_out(c_upper),
+                                        .d_out(d_upper),
+                                        .e_out(e_upper),
+                                        .f_out(f_upper),
+                                        .g_out(g_upper),
+                                        .h_out(h_upper),
+                                        .hash_out(hash_out_upper)    
+    );
     
-    always_comb
-        $display("padded message is %h", padded_message);
+    always_comb begin
+        if (multiples_of_512_output == 1) begin
+            final_hash = hash_out_lower;
+        end
+        if (multiples_of_512_output == 2) begin
+            final_hash = hash_out_upper;
+        end
+    end   
+    // mux logic here.  Input to mux is multiples_of_512
+    //    $display("padded message is %h", padded_message);
      
 endmodule

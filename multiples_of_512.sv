@@ -21,18 +21,16 @@
 module multiples_of_512(
     logic [9:0] input_length,
     output integer padded_message_width,
-    output integer multiples_of_512
+    output integer multiples_of_512_output
     );
      
-    assign multiples_of_512 = 1;
-    assign padded_message_width = multiples_of_512 * 512;
+    assign padded_message_width = multiples_of_512_output * 512;
     
     always_comb begin
-        while ((multiples_of_512 * 512 - input_length) < 64) begin
-            multiples_of_512  += 1;
+        multiples_of_512_output = 1;
+        if ((multiples_of_512_output * 512 - int'(input_length)) < 64) begin
+            multiples_of_512_output++;
         end
-        $display("input length: %d", input_length);
-        $display("multiples of 512: %d", multiples_of_512);
     end             
         
 endmodule

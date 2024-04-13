@@ -21,14 +21,15 @@
 module pad_bits(
     input logic [0:9] input_length,
     input logic [0:1023] binary_input,
+    output integer multiples_of_512_output,
     output logic [0:1023] padded_message
     );
     
     
-    logic [0:2] multiples_of_512;
+    //logic [0:2] multiples_of_512;
     
     // Split original message into multiples of 512
-    multiples_of_512 multiples_of_512_instantiation(.input_length(input_length), .multiples_of_512(multiples_of_512));
+    multiples_of_512 multiples_of_512_instantiation(.input_length(input_length), .multiples_of_512_output(multiples_of_512_output));
     
 
 
@@ -48,7 +49,7 @@ module pad_bits(
                 
                 padded_message[input_length] = 1; // Set bit immediately following message
 
-                if (multiples_of_512 == 2)             
+                if (multiples_of_512_output == 2)             
                     padded_message = padded_message | input_length; // Append message length to least significant bits
                 else begin
                     for(i=0;i<=9;i=i+1) begin
