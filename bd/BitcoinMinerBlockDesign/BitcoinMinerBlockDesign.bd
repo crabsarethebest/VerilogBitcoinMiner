@@ -1,0 +1,162 @@
+{
+  "design": {
+    "design_info": {
+      "boundary_crc": "0x2FF5956FD7A97504",
+      "device": "xc7a100tcsg324-1",
+      "gen_directory": "../../../../BitcoinMiner.gen/sources_1/bd/BitcoinMinerBlockDesign",
+      "name": "BitcoinMinerBlockDesign",
+      "rev_ctrl_bd_flag": "RevCtrlBdOff",
+      "synth_flow_mode": "Hierarchical",
+      "tool_version": "2023.2",
+      "validated": "true"
+    },
+    "design_tree": {
+      "Testbench_0": "",
+      "clk_wiz_0": "",
+      "reset_inv_0": "",
+      "rst_clk_wiz_0_100M": ""
+    },
+    "ports": {
+      "sys_clock": {
+        "type": "clk",
+        "direction": "I",
+        "parameters": {
+          "CLK_DOMAIN": {
+            "value": "BitcoinMinerBlockDesign_sys_clock",
+            "value_src": "default"
+          },
+          "FREQ_HZ": {
+            "value": "100000000"
+          },
+          "FREQ_TOLERANCE_HZ": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "INSERT_VIP": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "PHASE": {
+            "value": "0.0"
+          }
+        }
+      },
+      "reset": {
+        "type": "rst",
+        "direction": "I",
+        "parameters": {
+          "INSERT_VIP": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "POLARITY": {
+            "value": "ACTIVE_LOW"
+          }
+        }
+      },
+      "led_0": {
+        "direction": "O"
+      }
+    },
+    "components": {
+      "Testbench_0": {
+        "vlnv": "xilinx.com:user:Testbench:1.0",
+        "ip_revision": "2",
+        "xci_name": "BitcoinMinerBlockDesign_Testbench_0_0",
+        "xci_path": "ip\\BitcoinMinerBlockDesign_Testbench_0_0\\BitcoinMinerBlockDesign_Testbench_0_0.xci",
+        "inst_hier_path": "Testbench_0"
+      },
+      "clk_wiz_0": {
+        "vlnv": "xilinx.com:ip:clk_wiz:6.0",
+        "ip_revision": "13",
+        "xci_name": "BitcoinMinerBlockDesign_clk_wiz_0_0",
+        "xci_path": "ip\\BitcoinMinerBlockDesign_clk_wiz_0_0\\BitcoinMinerBlockDesign_clk_wiz_0_0.xci",
+        "inst_hier_path": "clk_wiz_0",
+        "parameters": {
+          "CLK_IN1_BOARD_INTERFACE": {
+            "value": "sys_clock"
+          },
+          "RESET_BOARD_INTERFACE": {
+            "value": "reset"
+          },
+          "USE_BOARD_FLOW": {
+            "value": "true"
+          }
+        }
+      },
+      "reset_inv_0": {
+        "vlnv": "xilinx.com:ip:util_vector_logic:2.0",
+        "ip_revision": "3",
+        "xci_name": "BitcoinMinerBlockDesign_reset_inv_0_0",
+        "xci_path": "ip\\BitcoinMinerBlockDesign_reset_inv_0_0\\BitcoinMinerBlockDesign_reset_inv_0_0.xci",
+        "inst_hier_path": "reset_inv_0",
+        "parameters": {
+          "C_OPERATION": {
+            "value": "not"
+          },
+          "C_SIZE": {
+            "value": "1"
+          }
+        }
+      },
+      "rst_clk_wiz_0_100M": {
+        "vlnv": "xilinx.com:ip:proc_sys_reset:5.0",
+        "ip_revision": "14",
+        "xci_name": "BitcoinMinerBlockDesign_rst_clk_wiz_0_100M_0",
+        "xci_path": "ip\\BitcoinMinerBlockDesign_rst_clk_wiz_0_100M_0\\BitcoinMinerBlockDesign_rst_clk_wiz_0_100M_0.xci",
+        "inst_hier_path": "rst_clk_wiz_0_100M",
+        "parameters": {
+          "C_NUM_BUS_RST": {
+            "value": "1"
+          }
+        }
+      }
+    },
+    "nets": {
+      "Testbench_0_led": {
+        "ports": [
+          "Testbench_0/led",
+          "led_0"
+        ]
+      },
+      "clk_wiz_0_clk_out1": {
+        "ports": [
+          "clk_wiz_0/clk_out1",
+          "Testbench_0/clk",
+          "rst_clk_wiz_0_100M/slowest_sync_clk"
+        ]
+      },
+      "clk_wiz_0_locked": {
+        "ports": [
+          "clk_wiz_0/locked",
+          "rst_clk_wiz_0_100M/dcm_locked"
+        ]
+      },
+      "reset_1": {
+        "ports": [
+          "reset",
+          "reset_inv_0/Op1"
+        ]
+      },
+      "reset_inv_0_Res": {
+        "ports": [
+          "reset_inv_0/Res",
+          "clk_wiz_0/reset",
+          "rst_clk_wiz_0_100M/ext_reset_in"
+        ]
+      },
+      "rst_clk_wiz_0_100M_bus_struct_reset": {
+        "ports": [
+          "rst_clk_wiz_0_100M/bus_struct_reset",
+          "Testbench_0/rst"
+        ]
+      },
+      "sys_clock_1": {
+        "ports": [
+          "sys_clock",
+          "clk_wiz_0/clk_in1"
+        ]
+      }
+    }
+  }
+}

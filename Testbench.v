@@ -19,16 +19,25 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module Testbench();
-
-    logic [0:1023] binary_input = '0; // Initialize with all zeros
-
-    //logic [0:23] bits_value = 24'b011000010110001001100011;
+module Testbench(
+    input clk,
+    input rst,
+    output logic led
+);
+    logic led_output;
     logic [0:719] bits_value = 720'b011000010110001001100011011000010110001001100011011000010110001001100011011000010110001001100011011000010110001001100011011000010110001001100011011000010110001001100011011000010110001001100011011000010110001001100011011000010110001001100011011000010110001001100011011000010110001001100011011000010110001001100011011000010110001001100011011000010110001001100011011000010110001001100011011000010110001001100011011000010110001001100011011000010110001001100011011000010110001001100011011000010110001001100011011000010110001001100011011000010110001001100011011000010110001001100011011000010110001001100011011000010110001001100011011000010110001001100011011000010110001001100011011000010110001001100011011000010110001001100011;
-    logic [0:9]  input_length = 720;
-
-
+    logic [0:9] input_length = 720;
+    
+    always_ff @(posedge clk) begin
+        if(rst) begin
+            led <= (led_output && 1'b0);
+        end else begin
+            led <= (led_output && 1'b1);
+        end           
+    end
+    
     logic [0:1023] binary_input = '0; // Initialize with all zeros
+
     always_comb begin
         // Loop to set the bits from binary_input
 //        for (int i = 0; i < 24; i++) begin
@@ -39,6 +48,6 @@ module Testbench();
         end
    end 
 
-    sha256 sha256_instantiation(.input_length(input_length), .binary_input(binary_input));
+    sha256 sha256_instantiation(.input_length(input_length), .binary_input(binary_input), .led_out(led_output));
     
 endmodule

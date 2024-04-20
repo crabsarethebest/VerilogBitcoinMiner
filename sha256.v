@@ -1,7 +1,8 @@
 `include "sha256_constants.sv"
 module sha256 (
     input logic [0:9] input_length,
-    input logic [0:1023] binary_input
+    input logic [0:1023] binary_input,
+    output logic led_out
     );
     
     integer multiples_of_512_output;
@@ -66,8 +67,13 @@ module sha256 (
         if (multiples_of_512_output == 2) begin
             final_hash = hash_out_upper;
         end
+        
+        if (final_hash[0] == 1'b1) begin
+            led_out = 1'b1;
+        end else begin
+            led_out = 1'b0;
+        end
+        
     end   
-    // mux logic here.  Input to mux is multiples_of_512
-    //    $display("padded message is %h", padded_message);
      
 endmodule

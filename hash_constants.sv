@@ -1,4 +1,4 @@
-`include "sha256_constants.sv"
+//`include "sha256_constants.sv"
 `include "sigma_functions.sv"
 `include "bit_select_functions.sv"
 //////////////////////////////////////////////////////////////////////////////////
