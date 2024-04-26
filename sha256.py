@@ -242,4 +242,4 @@ if __name__ == "__main__":
     if final_hash == correct_value:
         print("we did it!")
     else:
-        print("something went wrong")
+        print("something went wrong :(")
