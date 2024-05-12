@@ -19,43 +19,50 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 module pad_bits(
-    input logic [0:9] input_length,
-    input logic [0:1023] binary_input,
-    output integer multiples_of_512_output,
-    output logic [0:1023] padded_message
+    input logic [0:255] unpadded_message,
+    output logic [0:511] padded_message
     );
     
-    
-    //logic [0:2] multiples_of_512;
-    
-    // Split original message into multiples of 512
-    multiples_of_512 multiples_of_512_instantiation(.input_length(input_length), .multiples_of_512_output(multiples_of_512_output));
-    
-
-
-
-        
     always_comb begin
-                integer i;
-                padded_message = '0; // Initialize the padded message with all '0's
+        integer i;
+        logic [0:9] message_length;
+        message_length = 10'd256;
+        padded_message = '0; // Initialize the padded message with all '0's
+        
+        for(i=0;i<=255;i=i+1) begin // Move message to most significant bits
+            if (unpadded_message[i]) begin
+                padded_message[i]=unpadded_message[i];
+            end
+        end
+        
+        padded_message[256] = 1; // Set bit immediately following message
+        
+        for(i=0;i<=9;i=i+1) begin
+            padded_message[511-9+i]=message_length[i];
+        end 
+    end          
+       
+//    always_comb begin
+//                integer i;
+//                padded_message = '0; // Initialize the padded message with all '0's
                 
-                $display("binary input is %b", binary_input);
+//                $display("binary input is %b", binary_input);
    
-                for(i=0;i<=1023;i=i+1) begin // Move message to most significant bits
-                    if (binary_input[i]) begin
-                        padded_message[i]=binary_input[i];
-                    end
-                end                
+//                for(i=0;i<=1023;i=i+1) begin // Move message to most significant bits
+//                    if (binary_input[i]) begin
+//                        padded_message[i]=binary_input[i];
+//                    end
+//                end                
                 
-                padded_message[input_length] = 1; // Set bit immediately following message
+//                padded_message[input_length] = 1; // Set bit immediately following message
 
-                if (multiples_of_512_output == 2)             
-                    padded_message = padded_message | input_length; // Append message length to least significant bits
-                else begin
-                    for(i=0;i<=9;i=i+1) begin
-                        padded_message[511-9+i]=input_length[i];
-                    end
-                end
+//                if (multiples_of_512_output == 2)             
+//                    padded_message = padded_message | input_length; // Append message length to least significant bits
+//                else begin
+//                    for(i=0;i<=9;i=i+1) begin
+//                        padded_message[511-9+i]=input_length[i];
+//                    end
+//                end
    
-    end
+//    end
 endmodule

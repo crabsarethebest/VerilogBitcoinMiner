@@ -1,5 +1,6 @@
 import sha_256_constants
 from hashlib import sha256
+import sys
 
 def pad_to_512(message: str):
     # determine length of string
@@ -192,10 +193,15 @@ def split_string_into_512_characters(string):
     return array
 
 if __name__ == "__main__":
-    input = 'abc'*50
+    input = 'abc'*25
     input_binary = ''.join(format(ord(char), '08b') for char in input) # convert input to binary
     message = pad_to_512(input_binary)
     message_blocks = split_string_into_512_characters(message)
+
+    print(message_blocks)
+    print(len(message_blocks[0]))
+    print(len(message_blocks[1]))
+
 
     k_constants = sha_256_constants.k_constants
     h_constants = sha_256_constants.h_constants.copy()
@@ -230,11 +236,14 @@ if __name__ == "__main__":
         h_constants['f'] = add_binary_strings([h_constants_previous.get('f'), h_constants.get('f')])
         h_constants['g'] = add_binary_strings([h_constants_previous.get('g'), h_constants.get('g')])
         h_constants['h'] = add_binary_strings([h_constants_previous.get('h'), h_constants.get('h')])
+        print(h_constants)
+
 
     final_hash = binary_to_hex(h_constants['a']) + binary_to_hex(h_constants['b']) + binary_to_hex(h_constants['c']) + \
     binary_to_hex(h_constants['d']) + binary_to_hex(h_constants['e']) + binary_to_hex(h_constants['f']) + \
     binary_to_hex(h_constants['g']) + binary_to_hex(h_constants['h'])
 
+    print("final has is:")
     print(final_hash)
     correct_value = sha256(input.encode('utf-8')).hexdigest()
     print(correct_value)

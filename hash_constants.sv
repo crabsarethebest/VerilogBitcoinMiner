@@ -21,16 +21,16 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-module hash_constants(
+module hasher(
     input logic [0:31] message_schedule[0:63],
-    input logic [0:31] a_in,
-    input logic [0:31] b_in,
-    input logic [0:31] c_in,
-    input logic [0:31] d_in,
-    input logic [0:31] e_in,
-    input logic [0:31] f_in,
-    input logic [0:31] g_in,
-    input logic [0:31] h_in,
+    input logic [0:31] a,
+    input logic [0:31] b,
+    input logic [0:31] c,
+    input logic [0:31] d,
+    input logic [0:31] e,
+    input logic [0:31] f,
+    input logic [0:31] g,
+    input logic [0:31] h,
     output logic [0:31] a_out,
     output logic [0:31] b_out,
     output logic [0:31] c_out,
@@ -47,14 +47,14 @@ module hash_constants(
     logic [0:31] T1;
     logic [0:31] T2;
     always_comb begin
-        a_out = a_in;
-        b_out = b_in;
-        c_out = c_in;
-        d_out = d_in;
-        e_out = e_in;
-        f_out = f_in;
-        g_out = g_in;
-        h_out = h_in;
+        a_out = a;
+        b_out = b;
+        c_out = c;
+        d_out = d;
+        e_out = e;
+        f_out = f;
+        g_out = g;
+        h_out = h;
     
         for (int i = 0; i < 64; i++) begin
             w_const = message_schedule[i];
@@ -75,14 +75,14 @@ module hash_constants(
             e_out = e_out + T1;           
         end
         
-        a_out = a_in + a_out;
-        b_out = b_in + b_out;
-        c_out = c_in + c_out;
-        d_out = d_in + d_out;
-        e_out = e_in + e_out;
-        f_out = f_in + f_out;
-        g_out = g_in + g_out;
-        h_out = h_in + h_out;
+        a_out = a + a_out;
+        b_out = b + b_out;
+        c_out = c + c_out;
+        d_out = d + d_out;
+        e_out = e + e_out;
+        f_out = f + f_out;
+        g_out = g + g_out;
+        h_out = h + h_out;
 
         hash_out = {a_out, b_out, c_out, d_out, e_out, f_out, g_out, h_out};
 

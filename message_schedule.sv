@@ -19,7 +19,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module message_schedule(
+module message_scheduler(
     input logic [0:511] message_block,
     output logic [0:31] message_schedule[0:63]
     );
