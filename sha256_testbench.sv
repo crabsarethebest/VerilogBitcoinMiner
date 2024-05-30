@@ -24,7 +24,7 @@
 //    input rst,
 //    output logic led
 //);
-module sha256_testbench(
+module sha256_wrapper_testbench(
 //    input logic clk,
 //    input logic reset,
 //    output logic led
