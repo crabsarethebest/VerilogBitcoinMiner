@@ -28,9 +28,9 @@ module fpga_raspberry_pi_fsm(
     input logic mosi, // mealy signal
     output logic miso,
     output logic request_midstate_and_block_2,
-    input logic recieved_midstate_and_block_2,
-    output logic [0:3] led_lower_mosi,
-    output logic [0:3] led_upper_mosi
+    output logic [0:2] current_fsm_state
+    //output logic [0:3] led_lower_mosi,
+    //output logic [0:3] led_upper_mosi
 );
     
     typedef enum {
@@ -46,6 +46,7 @@ module fpga_raspberry_pi_fsm(
     
     always_ff @(posedge clk or posedge rst) begin
         if (rst) begin
+            $display("reset went high");
             state <= REQUEST_MIDSTATE_AND_BLOCK_2;
         end else begin
             state <= next_state;
@@ -55,23 +56,36 @@ module fpga_raspberry_pi_fsm(
     always_comb begin
         case (state)
             REQUEST_MIDSTATE_AND_BLOCK_2: begin
+                current_fsm_state[0] = 0;
+                current_fsm_state[1] = 0;
+                current_fsm_state[2] = 0;
+                current_fsm_state[3] = 0;
                 request_midstate_and_block_2 = 1;
-                next_state = WAIT_FOR_MIDSTATE_AND_BLOCK_2;
+                next_state = chip_enable ? REQUEST_MIDSTATE_AND_BLOCK_2: WAIT_FOR_MIDSTATE_AND_BLOCK_2;
             end
             WAIT_FOR_MIDSTATE_AND_BLOCK_2: begin
+                current_fsm_state[0] = 1;
+                current_fsm_state[1] = 0;
+                current_fsm_state[2] = 0;
+                current_fsm_state[3] = 0;
                 request_midstate_and_block_2 = 0;
-                next_state = recieved_midstate_and_block_2 ? COMPUTE_SHA256 : WAIT_FOR_MIDSTATE_AND_BLOCK_2;
+                next_state = chip_enable ? COMPUTE_SHA256 : WAIT_FOR_MIDSTATE_AND_BLOCK_2;
             end
             COMPUTE_SHA256: begin
-                $display("state is COMPUTE_SHA256");
+                next_state = COMPUTE_SHA256;
+                current_fsm_state[0] = 0;
+                current_fsm_state[1] = 1;
+                current_fsm_state[2] = 0;
+                current_fsm_state[3] = 0;
             end
             SEND_RESULT: begin
-                $display("state is SEND_RESULT");
+                current_fsm_state[0] = 1;
+                current_fsm_state[1] = 1;
+                current_fsm_state[2] = 0;
+                current_fsm_state[3] = 0;   
             end
             default: begin
-                $display("state is DEFAULT");
                 next_state = REQUEST_MIDSTATE_AND_BLOCK_2;
-                request_midstate_and_block_2 = 0;
             end
         endcase
     end
