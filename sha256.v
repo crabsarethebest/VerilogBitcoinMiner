@@ -3,9 +3,8 @@ module sha256 (
     input rst,
     input logic [0:255] hash_constants,
     input logic [0:511] unhashed_value,
-    output logic [0:255] hashed_value,
-    output logic led_out
-    );
+    output logic [0:255] hashed_value
+        );
     
     logic [0:31] a, b, c, d, e, f, g, h;
     assign a = hash_constants[0:31];
@@ -20,7 +19,9 @@ module sha256 (
     logic [0:31] message_schedule [0:63];
     message_scheduler message_scheduler(.message_block(unhashed_value[0:511]), .message_schedule(message_schedule));
     
-    hasher hasher (
+    hasher hasher0 (
+                                        .clk(clk),
+                                        .rst(rst),
                                         .message_schedule(message_schedule),
                                         .a(a),
                                         .b(b),
@@ -32,6 +33,4 @@ module sha256 (
                                         .h(h),      
                                         .hash_out(hashed_value)                                   
     );
-     
-     
 endmodule
