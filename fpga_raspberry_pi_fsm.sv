@@ -28,10 +28,15 @@ module fpga_raspberry_pi_fsm(
     input logic mosi, // mealy signal
     output logic miso,
     output logic request_midstate_and_block_2,
-    output logic [0:2] current_fsm_state
-    //output logic [0:3] led_lower_mosi,
-    //output logic [0:3] led_upper_mosi
+    output logic [0:2] current_fsm_state,
+    output logic [0:11] mosi_lower,
+    output logic [0:11] mosi_upper,
+    output logic [0:11] final_hash_lower,
+    output logic [0:11] final_hash_upper,
+    output logic in_send_result_stage
 );
+    logic [0:255] midstate;
+    logic [0:511] block2;
     
     typedef enum {
         REQUEST_MIDSTATE_AND_BLOCK_2,
@@ -42,14 +47,29 @@ module fpga_raspberry_pi_fsm(
     
     State state, next_state;
     
-    logic mosi_message;
+    logic [0:767] mosi_message;
+    logic [0:255] final_hash;
+    logic [0:6] count;
+    
+    assign mosi_lower = mosi_message[0:11];
+    assign mosi_upper = mosi_message[756:767];
+    assign final_hash_lower = final_hash[0:11];
+    assign final_hash_upper = final_hash[244:255];
     
     always_ff @(posedge clk or posedge rst) begin
         if (rst) begin
-            $display("reset went high");
             state <= REQUEST_MIDSTATE_AND_BLOCK_2;
         end else begin
             state <= next_state;
+            if (state == COMPUTE_SHA256) begin // give some time for sha256 to complete
+                if (count < 100) begin
+                    count <= count + 1;
+                end else begin
+                    count <= 0;
+                end
+            end else begin
+                count <= 0;
+            end
         end
     end
     
@@ -72,24 +92,47 @@ module fpga_raspberry_pi_fsm(
                 next_state = chip_enable ? COMPUTE_SHA256 : WAIT_FOR_MIDSTATE_AND_BLOCK_2;
             end
             COMPUTE_SHA256: begin
-                next_state = COMPUTE_SHA256;
                 current_fsm_state[0] = 0;
                 current_fsm_state[1] = 1;
                 current_fsm_state[2] = 0;
                 current_fsm_state[3] = 0;
+                if (count == 100) begin
+                    next_state = SEND_RESULT; // Transition from WAIT to NEXT after 100 clock pulses
+                end else begin
+                    next_state = COMPUTE_SHA256; // Stay in WAIT state
+                end
             end
             SEND_RESULT: begin
                 current_fsm_state[0] = 1;
                 current_fsm_state[1] = 1;
                 current_fsm_state[2] = 0;
-                current_fsm_state[3] = 0;   
+                current_fsm_state[3] = 0;
+                next_state = SEND_RESULT;   
             end
             default: begin
                 next_state = REQUEST_MIDSTATE_AND_BLOCK_2;
             end
         endcase
     end
-   
-    spi_slave spi_slave_interface(.clk(spi_clk), .rst(rst), .chip_enable(chip_enable), .mosi_bit(mosi), .miso_bit(miso));
-    sha256_wrapper sha256_wrapper_0();
+    
+    always_ff @(posedge clk or posedge rst) begin
+        if (rst) begin
+            in_send_result_stage <= 0;
+            midstate <= 0;
+            block2 <= 0;
+        end else begin
+            case (state)
+                COMPUTE_SHA256: begin
+                    midstate <= mosi_message [0:255];
+                    block2 <= mosi_message [256:767];
+                end
+                SEND_RESULT: begin
+                    in_send_result_stage <= 1;
+                end           
+            endcase
+        end   
+    end
+    
+    spi_slave spi_slave_interface(.clk(spi_clk), .rst(rst), .chip_enable(chip_enable), .mosi_bit(mosi), .miso_bit(miso), .mosi_recieved(mosi_message));
+    sha256_wrapper sha256_wrapper_0(.clk(clk),.rst(rst), .midstate(midstate), .block2(block2), .sha256_1_hashed_value(final_hash));
 endmodule
