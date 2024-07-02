@@ -50,6 +50,7 @@ module fpga_raspberry_pi_fsm(
     logic [0:767] mosi_message;
     logic [0:255] final_hash;
     logic [0:6] count;
+    logic spi_rst;
     
     assign mosi_lower = mosi_message[0:11];
     assign mosi_upper = mosi_message[756:767];
@@ -80,7 +81,6 @@ module fpga_raspberry_pi_fsm(
                 current_fsm_state[1] = 0;
                 current_fsm_state[2] = 0;
                 current_fsm_state[3] = 0;
-                request_midstate_and_block_2 = 1;
                 next_state = chip_enable ? REQUEST_MIDSTATE_AND_BLOCK_2: WAIT_FOR_MIDSTATE_AND_BLOCK_2;
             end
             WAIT_FOR_MIDSTATE_AND_BLOCK_2: begin
@@ -88,7 +88,6 @@ module fpga_raspberry_pi_fsm(
                 current_fsm_state[1] = 0;
                 current_fsm_state[2] = 0;
                 current_fsm_state[3] = 0;
-                request_midstate_and_block_2 = 0;
                 next_state = chip_enable ? COMPUTE_SHA256 : WAIT_FOR_MIDSTATE_AND_BLOCK_2;
             end
             COMPUTE_SHA256: begin
@@ -122,17 +121,28 @@ module fpga_raspberry_pi_fsm(
             block2 <= 0;
         end else begin
             case (state)
+                REQUEST_MIDSTATE_AND_BLOCK_2: begin
+                    spi_rst <= 1;
+                    request_midstate_and_block_2 <= 1;
+                end
+                WAIT_FOR_MIDSTATE_AND_BLOCK_2: begin
+                    spi_rst <= 0;
+                    request_midstate_and_block_2 <= 0;
+                end
                 COMPUTE_SHA256: begin
+                    spi_rst <= 1;
                     midstate <= mosi_message [0:255];
                     block2 <= mosi_message [256:767];
                 end
                 SEND_RESULT: begin
+                    spi_rst <= 0;
+                    request_midstate_and_block_2 <= 1;
                     in_send_result_stage <= 1;
                 end           
             endcase
         end   
     end
     
-    spi_slave spi_slave_interface(.clk(spi_clk), .rst(rst), .chip_enable(chip_enable), .mosi_bit(mosi), .miso_bit(miso), .mosi_recieved(mosi_message));
+    spi_slave spi_slave_interface(.clk(spi_clk), .rst(spi_rst), .chip_enable(chip_enable), .mosi_bit(mosi), .miso_bit(miso), .mosi_recieved(mosi_message), .miso_message(final_hash));
     sha256_wrapper sha256_wrapper_0(.clk(clk),.rst(rst), .midstate(midstate), .block2(block2), .sha256_1_hashed_value(final_hash));
 endmodule
