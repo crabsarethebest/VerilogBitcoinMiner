@@ -34,7 +34,7 @@ module spi_slave(
     
     //localparam logic [0:7] MISO_WORD_TO_SEND = 8'hA2; // debug purposes only
     
-    always_ff @(posedge clk or posedge rst) begin
+    always_ff @(posedge clk or rst) begin
         if (rst) begin
             bit_counter <= 0;
             miso_bit <= miso_message[0];
